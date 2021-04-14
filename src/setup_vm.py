@@ -84,7 +84,7 @@ def set_ssh(config):
 
 
 def stop_share_key(config):
-    system("git add . >/dev/null 2>&1 ; git commit -m 'stop sharing key' >/dev/null >/dev/null 2>&1 ; git push >dev/null 2>&1")
+    system("git add . >/dev/null 2>&1 ; git commit -m 'stop sharing key' >/dev/null >/dev/null 2>&1 ; git push >/dev/null 2>&1")
 
 
 def setup_vm(config):
