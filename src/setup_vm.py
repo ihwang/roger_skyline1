@@ -81,11 +81,12 @@ def detach_device(device, vmname):
 def share_key(config):
     system("cp ~/.ssh/id_rsa.pub ./mykey")
     system("git add mykey; git commit -m 'update key'; git push")
+    sleep(2)
 
 
 def stop_share_key(config):
     system("rm ./mykey")
-    system("git add .; git commit -m 'stop sharing key' ; git push")
+    system("git add . ; git commit -m 'stop sharing key' ; git push")
 
 
 def setup_vm(config):

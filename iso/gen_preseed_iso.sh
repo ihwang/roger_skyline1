@@ -40,7 +40,7 @@ function do_rezip() {
 	sudo rm -rf ./${PRESEED_DIR}
 }
 
-do_prepare
+#do_prepare
 do_unzip
 do_preseed
 do_rezip
