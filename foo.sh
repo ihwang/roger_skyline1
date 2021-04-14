@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo hi
+cd ~ && touch foo
