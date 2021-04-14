@@ -24,6 +24,7 @@ function do_unzip() {
 }
 
 function do_preseed() {
+	echo preseed.cfg | cpio -H newc -o -A -F ./${PRESEED_DIR}/initrd
 	cp -f isolinux.cfg ./${PRESEED_DIR}
 }
 

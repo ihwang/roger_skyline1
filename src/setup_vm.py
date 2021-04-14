@@ -14,10 +14,6 @@ def create_vm(config):
     + " --memory " + config["RAM"] + " --cpus " + config["CPU_CORE"])
 
 
-def set_preseed(config):
-    pass
-
-
 def set_storage(config):
     for interface in DISK_INTERFACES:
         system("vboxmanage storagectl " + config["VMNAME"] \
@@ -55,9 +51,9 @@ def install_os(config):
     system("vboxmanage startvm " + config["VMNAME"])
     # system("vboxmanage startvm " + config["VMNAME"] + " --type headless")
     sleep(1)
-    status = popen("vboxmanage showvminfo " + config["VMNAME"] \
+    is_running = popen("vboxmanage showvminfo " + config["VMNAME"] \
         + " | grep -c 'running'").read()
-    if '0' in status:
+    if is_running[0] != '1':
         print("roger_skyline_1: Can't run VM " + config["VMNAME"], file=sys.stderr)
         exit()
     else:
@@ -65,33 +61,38 @@ def install_os(config):
         while True:
             is_running = popen("vboxmanage showvminfo " + config["VMNAME"] \
                 + " | grep -c 'running'").read()
-            if '1' in status:
+            if is_running[0] == '1':
                 sleep(5)
             else:
                 print("Operating System Installed")
                 break
-        detach_device("IDE", config["VMNAME"])
-
-
-def detach_device(device, vmname):
-    system("vboxmanage storageattach " + vmname \
-        + " --storagectl " + device + " --port 0 --device 0 -- medium none")
+        system("vboxmanage storageattach " + config["VMNAME"] \
+            + " --storagectl IDE --port 0 --device 0 --medium none")
 
 
 def share_key(config):
     system("cp ~/.ssh/id_rsa.pub ./mykey")
-    system("git add mykey; git commit -m 'update key'; git push")
+    system("git add mykey; git commit -m 'update key' >/dev/null 2>/dev/null; git push")
     sleep(2)
+    system("rm ./mykey")
+
+
+def set_ssh(config):
+    pass
+
+
 
 
 def stop_share_key(config):
-    system("rm ./mykey")
     system("git add . ; git commit -m 'stop sharing key' ; git push")
 
 
 def setup_vm(config):
+    status = system("vboxmanage showvminfo " + config["VMNAME"] + " >/dev/null 2>&1")
+    if status == 0:
+        print("roger_skyline1: the virtual machine " + config["VMNAME"] + " has already been set up", file=sys.stderr)
+        exit(1)
     create_vm(config)
-    set_preseed(config)
     set_storage(config)
     set_bootorder(config["VMNAME"])
     set_network(config)
