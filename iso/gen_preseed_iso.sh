@@ -4,9 +4,8 @@ PRESEED_DIR="temp_isofiles"
 ORIGINAL_ISO="mini.iso"
 PRESEEDED_ISO="preseed-mini.iso"
 
-
 function do_prepare() {
-	sudo apt-get update
+	sudo apt-get update 
 	sudo apt-get install bsdtar -y
 	sudo apt-get install gunzip -y
 	sudo apt-get install gzip -y
@@ -41,7 +40,7 @@ function do_rezip() {
 	sudo rm -rf ./${PRESEED_DIR}
 }
 
-#do_prepare
+do_prepare
 do_unzip
 do_preseed
 do_rezip

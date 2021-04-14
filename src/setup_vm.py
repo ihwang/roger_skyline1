@@ -83,13 +83,17 @@ def share_key(config):
     system("git add mykey; git commit -m 'update key'; git push")
 
 
+def stop_share_key(config):
+    system("rm ./mykey")
+    system("git add .; git commit -m 'stop sharing key' ; git push")
+
+
 def setup_vm(config):
     create_vm(config)
     set_preseed(config)
     set_storage(config)
     set_bootorder(config["VMNAME"])
     set_network(config)
-
     share_key(config)
-
     install_os(config)
+    stop_share_key(config)

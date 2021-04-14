@@ -4,6 +4,7 @@ sys.dont_write_bytecode = True
 import os
 
 from src.parser         import parser
+from src.build          import build_image
 from src.setup_vm       import setup_vm
 # from src.stop_vm        import stop_vm
 # from src.delete_vm      import delete_vm
@@ -23,7 +24,7 @@ def main():
         exit(1)
     config = parser(CONFIG_FILE)
     if sys.argv[1] == 'build':
-        build_image(config)
+        build_image()
     elif sys.argv[1] == 'setup':
         setup_vm(config)
     elif sys.argv[1] == 'start':
