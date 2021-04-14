@@ -78,10 +78,18 @@ def detach_device(device, vmname):
         + " --storagectl " + device + " --port 0 --device 0 -- medium none")
 
 
+def share_key(config):
+    system("cp ~/.ssh/id_rsa.pub ./mykey")
+    system("git add mykey; git commit -m 'update key'; git push")
+
+
 def setup_vm(config):
     create_vm(config)
     set_preseed(config)
     set_storage(config)
     set_bootorder(config["VMNAME"])
     set_network(config)
+
+    share_key(config)
+
     install_os(config)
