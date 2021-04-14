@@ -72,7 +72,7 @@ def install_os(config):
 
 def share_key(config):
     system("cp ~/.ssh/id_rsa.pub ./mykey")
-    system("git add mykey; git commit -m 'update key' >/dev/null 2>/dev/null; git push")
+    system("git add mykey >/dev/null 2>&1 ; git commit -m 'update key' >/dev/null 2>&1; git push >/dev/null 2>&1")
     sleep(2)
     system("rm ./mykey")
 
@@ -84,7 +84,7 @@ def set_ssh(config):
 
 
 def stop_share_key(config):
-    system("git add . ; git commit -m 'stop sharing key' ; git push")
+    system("git add . >/dev/null 2>&1 ; git commit -m 'stop sharing key' >/dev/null >/dev/null 2>&1 ; git push >dev/null 2>&1")
 
 
 def setup_vm(config):
