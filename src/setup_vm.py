@@ -1,7 +1,6 @@
+import sys
 from os     import system, popen
 from time   import sleep
-
-import sys
 
 
 DISK_INTERFACES = ("IDE", "SATA")
@@ -47,46 +46,6 @@ def set_network(config):
     system("vboxmanage modifyvm " +config["VMNAME"] + " --bridgeadapter1 enp0s25")
 
 
-def install_os(config):
-    system("vboxmanage startvm " + config["VMNAME"])
-    # system("vboxmanage startvm " + config["VMNAME"] + " --type headless")
-    sleep(1)
-    is_running = popen("vboxmanage showvminfo " + config["VMNAME"] \
-        + " | grep -c 'running'").read()
-    if is_running[0] != '1':
-        print("roger_skyline_1: Can't run VM " + config["VMNAME"], file=sys.stderr)
-        exit()
-    else:
-        print("Installing Operating System to VM " + config["VMNAME"])
-        while True:
-            is_running = popen("vboxmanage showvminfo " + config["VMNAME"] \
-                + " | grep -c 'running'").read()
-            if is_running[0] == '1':
-                sleep(5)
-            else:
-                print("Operating System Installed")
-                break
-        system("vboxmanage storageattach " + config["VMNAME"] \
-            + " --storagectl IDE --port 0 --device 0 --medium none")
-
-
-def share_key(config):
-    system("cp ~/.ssh/id_rsa.pub ./mykey")
-    system("git add mykey >/dev/null 2>&1 ; git commit -m 'update key' >/dev/null 2>&1; git push >/dev/null 2>&1")
-    sleep(2)
-    system("rm ./mykey")
-
-
-def set_ssh(config):
-    pass
-
-
-
-
-def stop_share_key(config):
-    system("git add . >/dev/null 2>&1 ; git commit -m 'stop sharing key' >/dev/null >/dev/null 2>&1 ; git push >/dev/null 2>&1")
-
-
 def setup_vm(config):
     status = system("vboxmanage showvminfo " + config["VMNAME"] + " >/dev/null 2>&1")
     if status == 0:
@@ -96,6 +55,3 @@ def setup_vm(config):
     set_storage(config)
     set_bootorder(config["VMNAME"])
     set_network(config)
-    share_key(config)
-    install_os(config)
-    stop_share_key(config)

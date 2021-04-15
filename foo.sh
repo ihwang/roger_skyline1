@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cd ~ && touch foo
+cd ~ && echo $1

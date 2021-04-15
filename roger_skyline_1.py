@@ -6,6 +6,9 @@ import os
 from src.parser         import parser
 from src.build          import build_image
 from src.setup_vm       import setup_vm
+from src.install_os     import install_os
+from src.config_os      import config_os
+
 # from src.stop_vm        import stop_vm
 # from src.delete_vm      import delete_vm
 # from src.connect_ssh    import connect_ssh
@@ -27,6 +30,8 @@ def main():
         build_image()
     elif sys.argv[1] == 'setup':
         setup_vm(config)
+        install_os(config)
+        config_os(config)
     elif sys.argv[1] == 'start':
         start_vm(config)
     elif sys.argv[1] == 'stop':
