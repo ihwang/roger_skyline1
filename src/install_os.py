@@ -10,10 +10,6 @@ def share_key():
     system("rm ./mykey")
 
 
-def stop_share_key():
-    system("git add . >/dev/null 2>&1 ; git commit -m 'stop sharing key' >/dev/null >/dev/null 2>&1 ; git push >/dev/null 2>&1")
-
-
 def install_os(config):
     share_key()
     system("vboxmanage startvm " + config["VMNAME"])
@@ -36,5 +32,3 @@ def install_os(config):
                 break
         system("vboxmanage storageattach " + config["VMNAME"] \
             + " --storagectl IDE --port 0 --device 0 --medium none")
-    stop_share_key()
-
