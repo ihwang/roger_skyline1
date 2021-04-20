@@ -25,7 +25,6 @@ def set_storage(config):
         + " --storagectl " + DISK_INTERFACES[0] \
         + " --port 0 --device 0 --type dvddrive" \
         + " --medium " + config["ISO_PATHNAME"])
-        # ISO should be generated
     system("vboxmanage storageattach " + config["VMNAME"] \
         + " --storagectl " + DISK_INTERFACES[1] + " --port 0 --device 0" \
         + " --type " + config["DISK_TYPE"] \
@@ -39,10 +38,7 @@ def set_bootorder(vmname):
 
 def set_network(config):
     system("vboxmanage modifyvm " + config["VMNAME"] + " --nic1 bridged")
-    # promiscuous mode setting
-    # system("vboxmanage modifyvm " + config["VMNAME"] + " --nicpromisc1 allow-all")
-    # cable-like mode
-    # system("vboxmanage modifyvm " + config["VMNAME"] + " --cableconnected1 on")
+    system("vboxmanage modifyvm " + config["VMNAME"] + " --cableconnected1 on")
     system("vboxmanage modifyvm " +config["VMNAME"] + " --bridgeadapter1 enp0s25")
 
 

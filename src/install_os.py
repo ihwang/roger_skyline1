@@ -4,10 +4,10 @@ from time   import sleep
 
 
 def share_key():
-    system("cp ~/.ssh/id_rsa.pub ./mykey")
-    system("git add mykey >/dev/null 2>&1 ; git commit -m 'update key' >/dev/null 2>&1; git push >/dev/null 2>&1")
+    system("cp ~/.ssh/id_rsa.pub ./authorized_keys")
+    system("git add authorized_keys >/dev/null 2>&1 ; git commit -m 'update key' >/dev/null 2>&1; git push >/dev/null 2>&1")
     sleep(2)
-    system("rm ./mykey")
+    system("rm ./authorized_keys")
 
 
 def install_os(config):
