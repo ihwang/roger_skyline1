@@ -6,9 +6,10 @@ PRESEEDED_ISO="preseed-mini.iso"
 
 function do_prepare() {
 	sudo rm -rf ./$PRESEED_DIR
-	echo "Getting ready to build.."
+	echo "Preparing the image file.."
 	sudo apt-get install curl -y >/dev/null 2>&1
 	curl -O http://ftp.debian.org/debian/dists/buster/main/installer-amd64/current/images/netboot/mini.iso
+	echo "Starting to preseed.."
 	sudo apt-get update -y >/dev/null 2>&1
 	sudo apt-get upgrade -y >/dev/null 2>&1
 	sudo apt-get install bsdtar -y >/dev/null 2>&1

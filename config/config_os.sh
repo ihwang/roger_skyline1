@@ -118,3 +118,4 @@ config_dos
 block_portscan
 spawn_scripts
 config_crontab
+echo "roger_skyline_1: Configuration completed."
