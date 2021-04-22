@@ -3,6 +3,7 @@ from time   import sleep
 
 
 def config_os(config):
+    print("roger_skyline_1: Configuring OS..")
     system("vboxmanage startvm " + config["VMNAME"] \
         + " --type headless >/dev/null 2>&1")
     while system("ping -c 1 -t 2 " + config["IP"] + " >/dev/null 2>&1"):

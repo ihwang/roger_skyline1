@@ -6,5 +6,5 @@ def introduce_commands():
     print("start: Run VM in Virtualbox emulator.")
     print("stop: Stop the running VM.")
     print("delete: Delete VM.")
-    print("connect: Connect to VM via SSH.")
+    print("ssh: Connect to VM via SSH.")
     print("help or ?: Repeat this introduction.")

@@ -5,15 +5,19 @@ ORIGINAL_ISO="mini.iso"
 PRESEEDED_ISO="preseed-mini.iso"
 
 function do_prepare() {
-	sudo apt-get update 
-	sudo apt-get install bsdtar -y
-	sudo apt-get install gunzip -y
-	sudo apt-get install gzip -y
-	sudo apt-get install md5sum -y
-	sudo apt-get install cpio -y
-	sudo apt-get install genisoimage -y
-	sudo apt-get install curl -y
+	sudo rm -rf ./$PRESEED_DIR
+	echo "Getting ready to build.."
+	sudo apt-get install curl -y >/dev/null 2>&1
 	curl -O http://ftp.debian.org/debian/dists/buster/main/installer-amd64/current/images/netboot/mini.iso
+	sudo apt-get update -y >/dev/null 2>&1
+	sudo apt-get upgrade -y >/dev/null 2>&1
+	sudo apt-get install bsdtar -y >/dev/null 2>&1
+	sudo apt-get install gunzip -y >/dev/null 2>&1
+	sudo apt-get install gzip -y >/dev/null 2>&1
+	sudo apt-get install md5sum -y >/dev/null 2>&1
+	echo "Almost done.."
+	sudo apt-get install cpio -y >/dev/null 2>&1
+	sudo apt-get install genisoimage -y >/dev/null 2>&1
 }
 
 function do_unzip() {
@@ -39,6 +43,7 @@ function do_rezip() {
 						-no-emul-boot -boot-load-size 4 -boot-info-table \
 	                    -o ${PRESEEDED_ISO} ./${PRESEED_DIR}
 	sudo rm -rf ./${PRESEED_DIR}
+	echo "Build(preseeding) completed."
 }
 
 do_prepare

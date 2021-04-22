@@ -1,7 +1,7 @@
 #!/bin/sh
 SSHD_CONF="/etc/ssh/sshd_config"
 JAIL_CONF="/etc/fail2ban/jail.conf"
-POSTSENTRY_CONF="/etc/portsentry/portsentry.conf"
+PORTSENTRY_CONF="/etc/portsentry/portsentry.conf"
 CRONTAB="/etc/crontab"
 
 ROOT_PWD=$1
@@ -11,7 +11,7 @@ SSH_PORT=$3
 config_sudo()
 {
     echo "roger_skyline_1: Starting sudo configuration.."
-    echo $ROOT_PWD | su -c "apt-get upgrade ; apt-get update ; apt-get install sudo -y >/dev/null 2>&1"
+    echo $ROOT_PWD | su -c "apt-get upgrade ; apt-get update ; apt-get install sudo -y ; apt-get install vim -y >/dev/null 2>&1"
     echo $ROOT_PWD | su -c "sed -i '20 a debian\ \ \ ALL=(ALL:ALL) ALL' /etc/sudoers"
     echo "roger_skyline_1: Sudo configuration completed."
 }
@@ -32,8 +32,7 @@ config_firewall()
 {
     echo "roger_skyline_1: Starting firewall configuration.."
     echo "$DEBIAN_PWD" | sudo -S apt-get install ufw -y >/dev/null 2>&1
-    echo "$DEBIAN_PWD" | sudo -S ufw allow $SSH_PORT
-    echo "$DEBIAN_PWD" | sudo -S ufw allow from 192.168.1.4/30
+    echo "$DEBIAN_PWD" | sudo -S ufw allow from 192.168.1.4/30 to any port $SSH_PORT
     echo "$DEBIAN_PWD" | sudo -S systemctl enable ufw
     echo "$DEBIAN_PWD" | sudo -S ufw enable
     echo "roger_skyline_1: Firewall configuration completed."
@@ -52,16 +51,16 @@ config_dos()
 
 block_portscan()
 {
-    echo "roger_skyline_1: Starting blocking post scanning.."
+    echo "roger_skyline_1: Starting blocking port scanning.."
     echo "$DEBIAN_PWD" | sudo -S apt-get install portsentry -y >/dev/null 2>&1
-    LINE_TO_MODIFY=$(echo "$DEBIAN_PWD" | sudo -S grep -n "BLOCK_UDP=" $PORTSENTRY_CONF | cut -d ":" -f 1 $PORTSENTRY_CONF)
-    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY,$LINE_TO_MODIFY d"
-    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY a BLOCK_UDP="1" " $PORTSENTRY_CONF
-    LINE_TO_MODIFY=$(echo "$DEBIAN_PWD" | sudo -S grep -n "BLOCK_TCP=" $PORTSENTRY_CONF | cut -d ":" -f 1 $PORTSENTRY_CONF)
-    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY,$LINE_TO_MODIFY d"
-    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY a BLOCK_TCP="1" " $PORTSENTRY_CONF
+    LINE_TO_MODIFY=$(echo "$DEBIAN_PWD" | sudo -S grep -n "BLOCK_UDP=" $PORTSENTRY_CONF | cut -d ":" -f 1)
+    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY,$LINE_TO_MODIFY d" $PORTSENTRY_CONF
+    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY a BLOCK_UDP=\"1\" " $PORTSENTRY_CONF
+    LINE_TO_MODIFY=$(echo "$DEBIAN_PWD" | sudo -S grep -n "BLOCK_TCP=" $PORTSENTRY_CONF | cut -d ":" -f 1)
+    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY,$LINE_TO_MODIFY d" $PORTSENTRY_CONF
+    echo "$DEBIAN_PWD" | sudo -S sed -i "$LINE_TO_MODIFY a BLOCK_TCP=\"1\" " $PORTSENTRY_CONF
     echo "$DEBIAN_PWD" | sudo -S systemctl restart portsentry
-    echo "roger_skyline_1: Portsentry configuration completed."
+    echo "roger_skyline_1: Port scanning configuration completed."
 }
 
 spawn_scripts()
@@ -70,38 +69,46 @@ spawn_scripts()
     echo "$DEBIAN_PWD" | sudo -S apt-get install mailutils -y >/dev/null 2>&1
     #Updating pkgs
     echo '#!/bin/sh
-    echo "$DEBIAN_PWD" | sudo -S apt-get update >> /var/log/update_script.log
-    echo "$DEBIAN_PWD" | sudo -S apt-get upgrade >> /var/log/update_script.log
-    ' > /home/debian/update_pkgs.sh
+echo "$DEBIAN_PWD" | sudo -S apt-get update >>/var/log/update_script.log 2>&1
+echo "$DEBIAN_PWD" | sudo -S apt-get upgrade >> /var/log/update_script.log 2>&1
+' > /home/debian/update_pkgs.sh
     chmod +x /home/debian/update_pkgs.sh
 
     #Get current crontab and compare
     echo '#!/bin/sh
 
-    crontab -l > /home/debian/.crontab.new
-    CHANGED=$(diff .crontab.old .crontab.new)
+crontab -l > /home/debian/.crontab.new
+diff .crontab.old .crontab.new >/dev/null 2>&1
+CHANGED=${?}
 
-    if [ "$CHANGED" -eq "1" ]; then
-        echo "." | mail -s "Crontab has been changed" root
-    else
-        rm /home/debian.crontab.new
-    fi
-    ' >>/home/debian/monitor_crontab.sh
+if [ "$CHANGED" -ne "0" ]; then
+    echo "." | mail -s "Crontab has been changed" root
+else
+    rm /home/debian/.crontab.new
+fi
+' >>/home/debian/monitor_crontab.sh
     chmod +x /home/debian/monitor_crontab.sh
     echo "roger_skyline_1: Spawning scripts completed."
 }
 
 config_crontab()
 {
-    echo 'roger_skyline_1: Setting cron..'
+    echo 'roger_skyline_1: Scheduling tasks with cron..'
     echo '0 4 * * 0 /home/debian/update_pkgs.sh
-    0 2 * * * /home/debian/monitor_crontab.sh
-    @reboot /home/debian/monitor_crontab.sh' > /tmp/my_cron
-    crontab /tmp/my_cron
-    rm /tmp/my_cron
-    echo 'roger_skyline_1: Cron setting completed.'
+0 2 * * * /home/debian/monitor_crontab.sh
+@reboot /home/debian/monitor_crontab.sh' > /home/debian/.my_cron
+    crontab /home/debian/.my_cron
+    rm /home/debian/.my_cron
     #Save old crontab
     crontab -l > /home/debian/.crontab.old
+    echo 'roger_skyline_1: Scheduling completed.'
+}
+
+stop_servicese()
+{
+    echo "$DEBIAN_PWD" | sudo -S systemctl stop anacron
+    echo "$DEBIAN_PWD" | sudo -S service dbus stop
+    echo "$DEBIAN_PWD" | sudo -S service dbus stop
 }
 
 config_sudo

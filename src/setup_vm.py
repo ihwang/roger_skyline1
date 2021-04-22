@@ -38,14 +38,14 @@ def set_bootorder(vmname):
 
 def set_network(config):
     system("vboxmanage modifyvm " + config["VMNAME"] + " --nic1 bridged")
-    system("vboxmanage modifyvm " + config["VMNAME"] + " --cableconnected1 on")
+#    system("vboxmanage modifyvm " + config["VMNAME"] + " --cableconnected1 on")
     system("vboxmanage modifyvm " +config["VMNAME"] + " --bridgeadapter1 enp0s25")
 
 
 def setup_vm(config):
     status = system("vboxmanage showvminfo " + config["VMNAME"] + " >/dev/null 2>&1")
     if status == 0:
-        print("roger_skyline1: the virtual machine " + config["VMNAME"] + " has already been set up", file=sys.stderr)
+        print("roger_skyline_1: the virtual machine " + config["VMNAME"] + " has already been set up", file=sys.stderr)
         exit(1)
     create_vm(config)
     set_storage(config)

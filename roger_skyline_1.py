@@ -19,7 +19,7 @@ CONFIG_FILE = "./config/roger_skyline_1.cfg"
 
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) == 1:
         print("roger_skyline_1: usage: roser_skyline_1 <command> ", file=sys.stderr)
         introduce_commands()
         exit(1)
@@ -32,10 +32,10 @@ def main():
     elif sys.argv[1] == 'setup':
         setup_vm(config)
         install_os(config)
-        # config_os(config)
-    # FOR TESTING#########
-    elif sys.argv[1] == 'config':
         config_os(config)
+    # FOR TESTING#########
+    # elif sys.argv[1] == 'config':
+        # config_os(config)
     #######################
     elif sys.argv[1] == 'start':
         start_vm(config)
@@ -43,9 +43,15 @@ def main():
         stop_vm(config)
     elif sys.argv[1] == 'delete':
         delete_vm(config)
-    elif sys.argv[1] == 'connect':
-        connect_ssh(config)
+    elif sys.argv[1] == 'ssh':
+        if len(sys.argv) > 2 and sys.argv[2] == '--boot':
+            connect_ssh(config, 1)
+        else:
+            connect_ssh(config, None)
     elif sys.argv[1] == 'help' or sys.argv[1] == '?':
+        introduce_commands()
+    else:
+        print("roger_skyline_1: Command doesn't exist", file=sys.stderr)
         introduce_commands()
 
 
